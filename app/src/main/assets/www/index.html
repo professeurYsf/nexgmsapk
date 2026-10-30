@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>NexGms</title>
+<link rel="stylesheet" href="shared/fonts.css">
+<script>window.GC_FIT=false</script>
+<script src="shared/shared.js"></script>
+<style>
+:root{--bg-sky-top:#EAF6FF;--bg-sky-bot:#DCF0FF;--surface:#fff;--surface-soft:#F3FAFF;--border:#D7EAF7;--text-hi:#26344D;--text-lo:#6E7F9B;--violet:#6C5CE7;--violet-deep:#4B3AC9;--shadow-card:0 10px 24px -8px rgba(43,58,85,.16);--shadow-pop:0 22px 48px -14px rgba(30,45,70,.28);--fd:'Fredoka',ui-rounded,system-ui,sans-serif;--fb:'Inter',system-ui,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--fb);color:var(--text-hi);background:linear-gradient(var(--bg-sky-top),var(--bg-sky-bot)) fixed;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;max-width:960px;margin:0 auto;padding:clamp(18px,5vw,34px) clamp(14px,4vw,28px) clamp(12px,3vw,20px)}
+h1{font-family:var(--fd);font-weight:700;font-size:clamp(28px,7.5vw,44px);line-height:1.05}
+.logo{flex:none;width:clamp(44px,11vw,54px);height:clamp(44px,11vw,54px);border-radius:16px;box-shadow:0 4px 12px rgba(5,18,70,.35)}
+.mid{flex:1;min-width:0;text-align:center}
+.pf{max-width:960px;margin:6px auto 0;padding:10px 14px calc(24px + env(safe-area-inset-bottom));text-align:center}
+.pf .link{display:block;width:auto;margin:0 auto;font-size:14px;text-align:center}
+header p{color:var(--text-lo);font-size:clamp(13px,3.2vw,16px);margin-top:4px}
+.iconbtn{flex:none;width:clamp(44px,11vw,54px);height:clamp(44px,11vw,54px);border-radius:18px;border:1px solid var(--border);background:var(--surface);color:var(--text-hi);display:grid;place-items:center;box-shadow:var(--shadow-card);cursor:pointer}
+.iconbtn svg{width:55%;height:55%}
+.iconbtn:active,.card:active{transform:scale(.95)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,clamp(140px,42vw,200px)),1fr));gap:clamp(10px,2.6vw,18px);max-width:960px;margin:0 auto;padding:0 clamp(14px,4vw,28px) 36px}
+.card{display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;padding:clamp(12px,3vw,18px);background:var(--surface);border:1px solid var(--border);border-radius:24px;box-shadow:var(--shadow-card);text-decoration:none;color:inherit;transition:transform .25s cubic-bezier(.34,1.56,.64,1)}
+.card img{width:min(100%,128px);aspect-ratio:1;object-fit:cover;border-radius:24%;background:var(--surface-soft)}
+.card b{font-family:var(--fd);font-weight:600;font-size:clamp(16px,4.2vw,20px)}
+.card span{color:var(--text-lo);font-size:clamp(11.5px,3vw,13.5px);line-height:1.3}
+.sheet-bg{position:fixed;inset:0;background:rgba(10,15,34,.45);display:none;align-items:flex-end;justify-content:center;z-index:10}
+.sheet-bg.open{display:flex}
+.sheet{width:100%;max-width:540px;max-height:88dvh;overflow:auto;background:var(--surface);border-radius:28px 28px 0 0;padding:clamp(18px,5vw,28px);padding-bottom:calc(clamp(18px,5vw,28px) + env(safe-area-inset-bottom));box-shadow:var(--shadow-pop)}
+.sheet h2{font-family:var(--fd);font-size:clamp(22px,6vw,28px);margin-bottom:14px}
+.row{padding:14px 0;border-top:1px solid var(--border)}
+.row>label,.row>.lbl{display:flex;justify-content:space-between;align-items:center;font-weight:600;font-size:15px;margin-bottom:10px}
+.seg{display:flex;gap:6px;background:var(--surface-soft);padding:4px;border-radius:14px}
+.seg button{flex:1;border:0;background:none;color:var(--text-lo);font:600 14px var(--fb);padding:10px 6px;border-radius:11px;cursor:pointer}
+.seg button[aria-pressed=true]{background:var(--violet);color:#fff}
+input[type=range]{width:100%;accent-color:var(--violet);height:28px}
+.sw{position:relative;width:52px;height:30px;flex:none}
+.sw input{position:absolute;inset:0;opacity:0;width:100%;height:100%;margin:0}
+.sw i{position:absolute;inset:0;border-radius:15px;background:var(--border);transition:.2s}
+.sw i:after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:.2s}
+.sw input:checked+i{background:var(--violet)}.sw input:checked+i:after{transform:translateX(22px)}
+.link{width:100%;text-align:left;border:0;background:none;color:var(--violet-deep);font:600 15px var(--fb);padding:0;cursor:pointer}
+html[data-theme=dark] .link{color:#A99DFF}
+.priv{display:none;color:var(--text-lo);font-size:14px;line-height:1.55;margin-top:10px}
+.close{width:100%;margin-top:8px;border:0;border-radius:16px;background:var(--violet);color:#fff;font:600 16px var(--fd);padding:14px;cursor:pointer}
+</style>
+</head>
+<body>
+<header>
+  <img class="logo" src="shared/logo.png" alt="NexGms">
+  <div class="mid"><h1 id="title">NexGms</h1><p id="sub"></p></div>
+  <button class="iconbtn" id="openSet" aria-label="Settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
+</header>
+<main class="grid" id="grid"></main>
+<footer class="pf"><button class="link" id="privLink"></button></footer>
+
+<div class="sheet-bg" id="bg"><div class="sheet" role="dialog" aria-modal="true">
+  <h2 id="tSet"></h2>
+  <div class="row"><div class="lbl" id="tLang"></div><div class="seg" id="segLang"><button data-v="fr">Français</button><button data-v="en">English</button></div></div>
+  <div class="row"><label for="vol"><span id="tVol"></span><span id="volOut"></span></label><input type="range" id="vol" min="0" max="100" step="5"></div>
+  <div class="row"><label for="snd"><span id="tSnd"></span><span class="sw"><input type="checkbox" id="snd"><i></i></span></label></div>
+  <div class="row" id="musRow" style="display:none"><label for="mus"><span id="tMus"></span><span class="sw"><input type="checkbox" id="mus"><i></i></span></label></div>
+  <div class="row" id="mvolRow" style="display:none"><label for="mvol"><span id="tMVol"></span><span id="mvolOut"></span></label><input type="range" id="mvol" min="0" max="100" step="5"></div>
+  <div class="row"><div class="lbl" id="tTheme"></div><div class="seg" id="segTheme"><button data-v="auto"></button><button data-v="light"></button><button data-v="dark"></button></div></div>
+  <div class="row"><button class="link" id="privBtn"></button><p class="priv" id="priv"></p></div>
+  <button class="close" id="closeSet"></button>
+</div></div>
+
+<script>
+var $=function(i){return document.getElementById(i)};
+function g(k,d){try{var v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}}
+function s(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+if(!g('gc_lang',null))s('gc_lang','fr');
+if(!g('gc_sound',null))s('gc_sound','on');
+var GAMES=[
+ ['4096','4096',{fr:'Fusionne jusqu’à 4096',en:'Merge up to 4096'}],
+ ['Sudoku','Sudoku',{fr:'La logique avant tout',en:'Pure logic'}],
+ ['checkers',{fr:'Dames',en:'Checkers'},{fr:'Dames espagnoles',en:'Spanish draughts'}],
+ ['colorblock',{fr:'Puzzle Couleurs',en:'Color Puzzle'},{fr:'Reproduis la grille',en:'Match the grid'}],
+ ['connect4',{fr:'Aligne 4',en:'Line Up 4'},{fr:'Aligne 4 jetons',en:'Line up 4 discs'}],
+ ['fiveinarow',{fr:'Cinq en ligne',en:'Five in a Row'},{fr:'Aligne 5 pions',en:'Line up 5 pieces'}],
+ ['memory-match','Memory Match',{fr:'Trouve les paires',en:'Find the pairs'}],
+ ['colorsort',{fr:'Tubes de Couleurs',en:'Color Tubes'},{fr:'Trie les couleurs',en:'Sort the colors'}],
+ ['fruitmemory',{fr:'Mémoire des Fruits',en:'Fruit Memory'},{fr:'Retrouve la place des fruits',en:'Remember where each fruit was'}],
+ ['numberpuzzle',{fr:'Puzzle Numérique',en:'Number Puzzle'},{fr:'Remets dans l’ordre',en:'Put it in order'}],
+ ['simon',{fr:'Mémoire Sonore',en:'Sound Memory'},{fr:'Répète la séquence',en:'Repeat the sequence'}],
+ ['tetrisneon', {fr:'Blocs Néon',en:'Neon Blocks'}, {fr:'Empile et efface les lignes',en:'Stack and clear lines'}],
+ ['dots', {fr:'Points et Boîtes',en:'Dots and Boxes'}, {fr:'Stratégie et réflexion',en:'Strategy and logic'}],		
+ ['tictactoe',{fr:'Morpion',en:'Tic Tac Toe'},{fr:'Alignez 3',en:'Line up 3'}],
+ ['flow',{fr:'Couleurs connectées',en:'Color Connect'},{fr:'Reliez les couleurs',en:'Connect the colors'}],
+ ['unblock',{fr:'Débloque le Bloc',en:'Unblock Puzzle'},{fr:'Libère le bloc rouge',en:'Free the red block'}],
+ ['tapcircle',{fr:'Touche le Cercle',en:'Tap the Circle'},{fr:'Touche au bon moment',en:'Tap at the right moment'}],
+ ['coinshuffle',{fr:'Mémoire des Pièces',en:'Coin Shuffle Memory'},{fr:'Suis la pièce rouge',en:'Follow the red coin'}],
+ ['stoptimer','Stop the Timer',{fr:'Jeu de précision',en:'Precision game'}],
+ ['fruitfusion',{fr:'Fusion de Fruits',en:'Fruit Fusion'},{fr:'Fusionne les fruits',en:'Merge the fruits'}]
+];
+var T={
+ fr:{sub:'Choisis un jeu',set:'Réglages',lang:'Langue',vol:'Volume',snd:'Effets sonores',mus:'Musique',mvol:'Volume musique',theme:'Thème',auto:'Auto',light:'Clair',dark:'Sombre',priv:'Confidentialité',close:'Fermer',
+  p:'Vos scores, vos préférences et vos parties en cours sont enregistrés localement sur votre appareil.'},
+ en:{sub:'Pick a game',set:'Settings',lang:'Language',vol:'Volume',snd:'Sound effects',mus:'Music',mvol:'Music volume',theme:'Theme',auto:'Auto',light:'Light',dark:'Dark',priv:'Privacy',close:'Close',
+  p:'Your scores, preferences and games in progress are stored locally on your device.'}
+};
+function pick(x,l){if(typeof x==='string')return x;return x[l]||x.fr||x.en||''}
+function render(){
+ var l=g('gc_lang','fr'),t=T[l]||T.fr;
+ document.documentElement.lang=l;
+ $('sub').textContent=t.sub;$('tSet').textContent=t.set;$('tLang').textContent=t.lang;$('tVol').textContent=t.vol;$('tSnd').textContent=t.snd;$('tMus').textContent=t.mus;$('tMVol').textContent=t.mvol;
+ $('tTheme').textContent=t.theme;$('privBtn').textContent=t.priv;$('privLink').textContent=t.priv;$('priv').textContent=t.p;$('closeSet').textContent=t.close;$('openSet').setAttribute('aria-label',t.set);
+ var tb=$('segTheme').children;tb[0].textContent=t.auto;tb[1].textContent=t.light;tb[2].textContent=t.dark;
+ $('grid').innerHTML=GAMES.map(function(x){return '<a class="card" href="games/'+x[0]+'/index.html"><img src="games/'+x[0]+'/logo.png" alt="" loading="lazy"><b>'+pick(x[1],l)+'</b><span>'+pick(x[2],l)+'</span></a>'}).join('');
+ mark('segLang',l);mark('segTheme',g('gc_theme','auto'));
+}
+function mark(id,v){[].forEach.call($(id).children,function(b){b.setAttribute('aria-pressed',b.dataset.v===v)})}
+function bindSeg(id,key,after){$(id).addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;s(key,b.dataset.v);after();render()})}
+bindSeg('segLang','gc_lang',function(){});
+bindSeg('segTheme','gc_theme',function(){GC.applyTheme()});
+var vol=parseFloat(g('gc_volume','0.8'));$('vol').value=Math.round(vol*100);$('volOut').textContent=Math.round(vol*100)+'%';
+$('vol').addEventListener('input',function(){var v=this.value/100;s('gc_volume',v);window.GC_VOLUME=v;$('volOut').textContent=this.value+'%'});
+$('vol').addEventListener('change',function(){try{new Audio('games/4096/sounds/click.wav').play()}catch(e){}});
+$('snd').checked=g('gc_sound','on')!=='off';
+$('snd').addEventListener('change',function(){s('gc_sound',this.checked?'on':'off')});
+(function(){var N=window.GCNative;if(!N||!N.isMusicOn)return;
+$('musRow').style.display='';$('mvolRow').style.display='';
+$('mus').checked=N.isMusicOn();var mv=N.getMusicVolume();$('mvol').value=mv;$('mvolOut').textContent=mv+'%';
+$('mus').addEventListener('change',function(){N.setMusicOn(this.checked)});
+$('mvol').addEventListener('input',function(){N.setMusicVolume(parseInt(this.value,10));$('mvolOut').textContent=this.value+'%'});})();
+$('privBtn').onclick=function(){GC.openPrivacy()};$('privLink').onclick=function(){GC.openPrivacy()};
+window.GCBack=function(){if($('bg').classList.contains('open')){open(false);return true}return false};
+function open(v){$('bg').classList.toggle('open',v)}
+$('openSet').onclick=function(){open(true)};$('closeSet').onclick=function(){open(false)};
+$('bg').addEventListener('click',function(e){if(e.target===this)open(false)});
+render();
+</script>
+</body>
+</html>

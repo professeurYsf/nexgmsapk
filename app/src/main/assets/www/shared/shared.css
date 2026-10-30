@@ -1,0 +1,92 @@
+html,body{overscroll-behavior:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation;-webkit-text-size-adjust:100%}
+body{-webkit-user-select:none;user-select:none;min-height:100vh;min-height:100dvh}
+img{-webkit-user-drag:none}
+html[data-theme="dark"]{color-scheme:dark;--bg-sky-top:#121830;--bg-sky-bot:#0A0F22;--surface:#1B2342;--surface-soft:#222B50;--border:#2F3B66;--border-soft:#27325A;--text-hi:#EAF0FF;--text-lo:#A5B3D6;--text-faint:#71809F;--shadow-card:0 10px 24px -8px rgba(0,0,0,.5);--shadow-pop:0 22px 48px -14px rgba(0,0,0,.7)}
+html[data-theme="dark"] body{background-color:var(--bg-sky-bot)}
+
+/* ===================== NexGms responsive layer ===================== */
+/* Sheets: always fit the window, scroll when taller than it */
+.overlay{padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-right)}
+.panel,.result-panel{max-height:100%;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+
+/* Square boards sized by CSS: never taller than the space left under the top bars */
+@supports (width:1cqh){
+  html[data-game="4096"] .board-wrap,html[data-game="colorblock"] .board-wrap,
+  html[data-game="numberpuzzle"] .board-wrap,html[data-game="Sudoku"] .board-wrap{container-type:size}
+  html[data-game="4096"] .board-frame,html[data-game="colorblock"] .board-frame,
+  html[data-game="numberpuzzle"] .board-frame{width:min(100%,100cqh)}
+  html[data-game="Sudoku"] .sudoku-board{width:min(94vw,440px,100cqh)}
+}
+
+/* Short windows (phones in landscape, split-screen): compact chrome, centered sheets */
+@media (max-height:520px){
+  .overlay{align-items:center}
+  .panel,.result-panel{border-radius:22px;border-bottom:1px solid var(--border);max-width:min(560px,94%);max-height:96%;padding:10px 18px 12px}
+  .sheet-handle{display:none}
+  .panel-logo{width:46px;height:46px;margin:0 auto 4px}
+  .panel h2{font-size:17px}
+  .panel-sub{margin-bottom:6px;font-size:12px}
+  .startbtn,.rematchbtn,.quitbtn{padding:9px;margin-top:8px}
+  .startbtn{margin-top:10px}
+  .topbar{padding-top:calc(4px + env(safe-area-inset-top));padding-bottom:2px}
+  .iconbtn{width:34px;height:34px}
+  .statsbar{padding-top:2px;padding-bottom:2px}
+  .board-wrap{padding-top:2px;padding-bottom:6px}
+}
+
+/* Landscape layouts for games that stack vertically in portrait */
+@media (max-height:520px) and (orientation:landscape){
+  /* Sudoku: board left, tools + numbers right */
+  html[data-game="Sudoku"] .game-screen{max-width:920px;display:grid;grid-template-columns:minmax(0,1fr) minmax(240px,400px);grid-template-rows:auto auto 1fr;column-gap:8px;align-content:stretch}
+  html[data-game="Sudoku"] .board-wrap{grid-column:1;grid-row:1 / span 3;container-type:size;padding:6px 8px}
+  html[data-game="Sudoku"] .top-toolbar{grid-column:2;grid-row:1;padding-right:max(14px,env(safe-area-inset-right))}
+  html[data-game="Sudoku"] .bottom-toolbar{grid-column:2;grid-row:2;padding-right:max(12px,env(safe-area-inset-right))}
+  html[data-game="Sudoku"] .number-pad{grid-column:2;grid-row:3;align-self:start;grid-template-columns:repeat(5,1fr);padding:6px max(14px,env(safe-area-inset-right)) 8px 14px}
+  html[data-game="Sudoku"] .num-btn{aspect-ratio:auto;height:54px}
+  html[data-game="Sudoku"] .action-tool{padding:6px 4px}
+  /* Neon Blocks: board centred, D-pad bottom-left, rotate bottom-right */
+  html[data-game="tetrisneon"] #app{max-width:none;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,520px) minmax(0,1fr);grid-template-rows:auto minmax(0,1fr)}
+  html[data-game="tetrisneon"] .topbar{grid-column:1 / -1;grid-row:1}
+  html[data-game="tetrisneon"] .play{grid-column:2;grid-row:2;padding-bottom:6px}
+  html[data-game="tetrisneon"] .controls{grid-column:1 / -1;grid-row:2;align-self:end;width:100% !important;max-width:none;padding:0 max(16px,env(safe-area-inset-left)) 12px;pointer-events:none}
+  html[data-game="tetrisneon"] .controls .cbtn{pointer-events:auto}
+  html[data-game="tetrisneon"] .side{gap:4px}
+  html[data-game="tetrisneon"] .side .chip{padding:3px 4px}
+  html[data-game="tetrisneon"] .side .chip b{font-size:15px}
+  /* Stop the Timer: target + ring left, big buttons right */
+  html[data-game="stoptimer"] .stage{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto minmax(0,1fr);gap:4px 16px;align-items:center;padding-bottom:10px}
+  html[data-game="stoptimer"] .target-card{grid-column:1;grid-row:1;min-width:0;padding:4px 18px;justify-self:center}
+  html[data-game="stoptimer"] .target-val{font-size:30px}
+  html[data-game="stoptimer"] .center{grid-column:1;grid-row:2;gap:4px;height:100%}
+  html[data-game="stoptimer"] .ring{width:min(34vh,130px);border-width:5px}
+  html[data-game="stoptimer"] .ring span{font-size:52px}
+  html[data-game="stoptimer"] .ring span.clock{font-size:34px}
+  html[data-game="stoptimer"] .hint{font-size:12px;min-height:0}
+  html[data-game="stoptimer"] .controls{grid-column:2;grid-row:1 / span 2;max-width:none;justify-content:center}
+  html[data-game="stoptimer"] .stopbtn{min-height:clamp(90px,34vh,150px)}
+  html[data-game="stoptimer"] .pbtn{min-height:clamp(90px,40vh,150px)}
+  html[data-game="stoptimer"] .readybtn{padding:16px}
+}
+
+@media (max-height:520px){
+  html[data-game="Sudoku"] .menu-screen{padding:4px 24px 8px;overflow-y:auto}
+  html[data-game="Sudoku"] .menu-logo-badge{width:52px;height:52px;margin:0 auto 4px}
+  html[data-game="Sudoku"] .menu-title{font-size:20px;margin-bottom:2px}
+  html[data-game="Sudoku"] .menu-subtitle{margin-bottom:8px;font-size:12px}
+  html[data-game="Sudoku"] .menu-btn{padding:10px}
+  html[data-game="Sudoku"] .menu-actions{gap:8px}
+  html[data-game="Sudoku"] .setup-list{margin-bottom:8px}
+}
+
+/* ---- NexGms ads dialog / toast ---- */
+.gcad-bg{position:fixed;inset:0;z-index:99999;background:rgba(8,12,32,.55);display:flex;align-items:center;justify-content:center;padding:20px;padding-left:max(20px,env(safe-area-inset-left));padding-right:max(20px,env(safe-area-inset-right))}
+.gcad{background:var(--surface,#fff);color:var(--text-hi,#14204a);border-radius:22px;padding:20px 18px 14px;width:100%;max-width:340px;max-height:92%;overflow:auto;text-align:center;box-shadow:0 20px 50px rgba(0,0,0,.35);font-family:inherit}
+.gcad h3{font-size:18px;margin:0 0 8px}.gcad p{font-size:14px;line-height:1.45;margin:0 0 14px;opacity:.8}
+.gcad button{display:block;width:100%;border:0;border-radius:14px;padding:12px;font:inherit;font-weight:700;font-size:15px;cursor:pointer;margin-top:8px}
+.gcad-ok{background:linear-gradient(135deg,#1fd6a5,#0fa583);color:#fff}.gcad-no{background:transparent;color:inherit;opacity:.7}
+.gcad-toast{position:fixed;left:50%;bottom:calc(28px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:100000;background:rgba(20,32,74,.94);color:#fff;padding:10px 16px;border-radius:14px;font:600 14px/1.3 inherit;max-width:88%;text-align:center;transition:opacity .3s}
+.gcad-toast.out{opacity:0}
+html[data-game="colorsort"] .hintbtn{position:relative}
+html[data-game="colorsort"] .hint-badge{position:absolute;top:-6px;right:-6px;min-width:19px;height:19px;padding:0 4px;border-radius:10px;background:#FFA93E;color:#fff;font:700 11px/15px sans-serif;text-align:center;font-style:normal;border:2px solid #fff}
+[dir="rtl"] .gcad{direction:rtl;text-align:center}
+[dir="rtl"] .gcad-toast{direction:rtl;text-align:center}
