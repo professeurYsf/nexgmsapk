@@ -1,0 +1,6 @@
+{
+  "name": "NexGms",
+  "description": "20 in 1 games collection with offline gameplay and AdMob rewarded ads",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
