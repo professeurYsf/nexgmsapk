@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#EAF6FF">
+<title>4096</title>
+<link rel="stylesheet" href="../../shared/fonts.css">
+<script src="../../shared/shared.js"></script>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="../../shared/shared.css">
+</head>
+<body>
+<div id="app">
+
+  <!-- Top bar: Home (left) · title · Pause (right) -->
+  <header class="topbar">
+    <button class="iconbtn" id="btnHome" aria-label="Accueil">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"/></svg>
+    </button>
+
+    <span class="topbar-title" data-i18n="game.title">4096</span>
+
+    <button class="iconbtn" id="btnPause" aria-label="Pause">
+      <svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1.4"/><rect x="14" y="5" width="4" height="14" rx="1.4"/></svg>
+    </button>
+  </header>
+
+  <!-- Score + Best, centred under the title -->
+    <div class="statsbar">
+      <div class="stat-chip score-chip">
+        <span class="stat-label" data-i18n="game.score">Score</span>
+        <strong id="scoreDisplay">0</strong>
+      </div>
+      <div class="stat-chip best-chip">
+        <span class="stat-label" data-i18n="game.best">Record</span>
+        <strong id="bestDisplay">0</strong>
+      </div>
+    </div>
+
+  <!-- Board -->
+  <div class="board-wrap">
+    <div class="board-frame">
+      <div id="main-board" class="board merge-board"></div>
+    </div>
+  </div>
+
+  <!-- SETUP OVERLAY -->
+  <div class="overlay" id="setupOverlay">
+    <div class="panel">
+      <div class="sheet-handle"></div>
+
+      <button class="panel-help" id="btnHelp" aria-label="Comment jouer">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.3a2.5 2.5 0 0 1 4.86.86c0 1.6-2.16 2-2.36 3.3" stroke-linecap="round"/><circle cx="12" cy="17" r="1.1" fill="currentColor" stroke="none"/></svg>
+      </button>
+
+      <div class="panel-logo">
+        <img src="logo.png" alt="4096">
+      </div>
+      <h2 data-i18n="game.title">4096</h2>
+      <p class="panel-sub" data-i18n="game.subtitle">Fusionne les nombres identiques jusqu'à 4096</p>
+
+      <button class="startbtn" id="btnStart">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        <span data-i18n="game.start">Commencer</span>
+      </button>
+      <button class="quitbtn" id="btnExitSetup">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 4H6.5A1.5 1.5 0 0 0 5 5.5v13A1.5 1.5 0 0 0 6.5 20H9"/><path d="M13 8l4 4-4 4M17 12H9" stroke-linejoin="round"/></svg>
+        <span data-i18n="game.quit">Quitter</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- PAUSE OVERLAY -->
+  <div class="overlay hidden" id="pauseOverlay">
+    <div class="panel pause-panel">
+      <div class="sheet-handle"></div>
+      <h2 data-i18n="pause.title">🎮 Jeu en pause</h2>
+      <button class="startbtn" id="btnResume">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        <span data-i18n="pause.resume">Continuer</span>
+      </button>
+      <button class="rematchbtn" id="btnPauseRestart">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+        <span data-i18n="pause.restart">Recommencer</span>
+      </button>
+      <button class="quitbtn" id="btnPauseMenu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"/></svg>
+        <span data-i18n="pause.menu">Menu des jeux</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- HELP OVERLAY -->
+  <div class="overlay hidden" id="helpOverlay">
+    <div class="panel">
+      <div class="sheet-handle"></div>
+      <h2 data-i18n="help.title">Comment jouer</h2>
+      <ul class="help-list">
+        <li data-i18n="help.li1">Glisse (ou utilise les flèches) pour déplacer toutes les tuiles.</li>
+        <li data-i18n="help.li2">Deux tuiles portant le même nombre et la même couleur fusionnent en une seule tuile de valeur double.</li>
+        <li data-i18n="help.li3">Atteins la tuile 4096 pour gagner, puis continue ou arrête-toi. Le maximum est 16384 (8192 + 8192).</li>
+        <li data-i18n="help.li4">La partie se termine quand la grille est pleine et qu'aucune fusion n'est possible.</li>
+      </ul>
+      <button class="startbtn" id="btnHelpClose">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>
+        <span data-i18n="help.close">Compris</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- WIN OVERLAY (4096 reached: continue or stop) -->
+  <div class="overlay hidden" id="winOverlay">
+    <div class="result-panel">
+      <div class="sheet-handle"></div>
+      <div class="banner" id="winBanner" data-i18n="win.banner">🎉 4096 ! Bravo !</div>
+      <p class="new-record hidden" id="winNewRecord" data-i18n="result.record">Nouveau record !</p>
+      <div class="win-stats">
+        <div class="win-stat"><span data-i18n="game.score">Score</span><strong id="winScore">0</strong></div>
+        <div class="win-stat"><span data-i18n="game.best">Record</span><strong id="winBest">0</strong></div>
+      </div>
+      <button class="startbtn" id="btnContinue">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        <span data-i18n="win.continue">Continuer jusqu'à 16384</span>
+      </button>
+      <button class="rematchbtn" id="btnWinRestart">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+        <span data-i18n="result.again">Rejouer</span>
+      </button>
+      <button class="quitbtn" id="btnWinMenu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"/></svg>
+        <span data-i18n="win.stop">Arrêter ici</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- END OVERLAY (16384 reached — game stops) -->
+  <div class="overlay hidden" id="maxOverlay">
+    <div class="result-panel">
+      <div class="sheet-handle"></div>
+      <div class="banner max-banner" id="maxBanner" data-i18n="max.banner">🏆 Tu es arrivé à la fin !</div>
+      <p class="end-sub" data-i18n="max.sub">Tuile 16384 atteinte : c'est le maximum du jeu.</p>
+      <p class="new-record hidden" id="maxNewRecord" data-i18n="result.record">Nouveau record !</p>
+      <div class="win-stats">
+        <div class="win-stat"><span data-i18n="game.score">Score</span><strong id="maxScore">0</strong></div>
+        <div class="win-stat"><span data-i18n="game.best">Record</span><strong id="maxBest">0</strong></div>
+      </div>
+      <button class="rematchbtn" id="btnMaxRestart">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+        <span data-i18n="result.again">Rejouer</span>
+      </button>
+      <button class="quitbtn" id="btnMaxMenu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"/></svg>
+        <span data-i18n="result.menu">Nouvelle partie</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- GAME OVER OVERLAY -->
+  <div class="overlay hidden" id="overOverlay">
+    <div class="result-panel">
+      <div class="sheet-handle"></div>
+      <div class="banner over-banner" id="overBanner" data-i18n="over.banner">Partie terminée</div>
+      <p class="new-record hidden" id="overNewRecord" data-i18n="result.record">Nouveau record !</p>
+      <div class="win-stats">
+        <div class="win-stat"><span data-i18n="game.score">Score</span><strong id="overScore">0</strong></div>
+        <div class="win-stat"><span data-i18n="game.best">Record</span><strong id="overBest">0</strong></div>
+      </div>
+      <button class="rematchbtn" id="btnOverRestart">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+        <span data-i18n="result.again">Rejouer</span>
+      </button>
+      <button class="quitbtn" id="btnOverMenu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"/></svg>
+        <span data-i18n="result.menu">Nouvelle partie</span>
+      </button>
+    </div>
+  </div>
+
+  <div id="confetti-container"></div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

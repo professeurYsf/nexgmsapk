@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#EAF6FF">
+<title>Memory Match</title>
+<link rel="stylesheet" href="../../shared/fonts.css">
+<script src="../../shared/shared.js"></script>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="../../shared/shared.css">
+</head>
+<body>
+<div id="app">
+
+  <!-- Top bar: Home (left) + title + Pause (right) -->
+  <header class="topbar">
+    <button class="iconbtn" id="homeBtn" aria-label="Home">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"/></svg>
+    </button>
+
+    <span class="topbar-title" data-i18n="game.title">Memory Match</span>
+
+    <button class="iconbtn" id="pauseBtn" aria-label="Pause">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>
+    </button>
+  </header>
+
+  <!-- Players (populated by script.js — 2 to 4 chips depending on mode/count) -->
+  <div class="playerbar" id="playerbar"></div>
+
+  <!-- Board -->
+  <div class="board-wrap">
+    <div id="memoryBoard" class="memory-board"></div>
+  </div>
+
+  <!-- SETUP OVERLAY -->
+  <div class="overlay" id="setupOverlay">
+    <div class="panel">
+      <div class="sheet-handle"></div>
+
+      <button class="panel-help" id="helpBtn" aria-label="How to play">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.3a2.5 2.5 0 0 1 4.86.86c0 1.6-2.16 2-2.36 3.3" stroke-linecap="round"/><circle cx="12" cy="17" r="1.1" fill="currentColor" stroke="none"/></svg>
+      </button>
+
+      <div class="panel-logo panel-logo--memory">
+        <svg viewBox="0 0 100 100">
+          <rect x="6" y="6" width="38" height="38" rx="9"/>
+          <rect x="56" y="6" width="38" height="38" rx="9" class="dim"/>
+          <rect x="6" y="56" width="38" height="38" rx="9" class="dim"/>
+          <rect x="56" y="56" width="38" height="38" rx="9"/>
+          <path d="M20 25h12M25 20v10" class="mark"/>
+          <path d="M70 25h12M70 75h12" class="mark"/>
+        </svg>
+      </div>
+      <h2 data-i18n="game.title">Memory Match</h2>
+      <p class="panel-sub" data-i18n="setup.subtitle">Find every matching pair</p>
+
+      <div class="section-label" data-i18n="setup.mode">Game mode</div>
+      <div class="optrow">
+        <button class="optbtn mode active" data-mode="ai">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8" width="16" height="12" rx="3"/><circle cx="9" cy="14" r="1.4" fill="currentColor" stroke="none"/><circle cx="15" cy="14" r="1.4" fill="currentColor" stroke="none"/><path d="M12 8V4"/><circle cx="12" cy="3" r="1.2" fill="currentColor" stroke="none"/></svg>
+          <span data-i18n="setup.vsAI">Vs AI</span>
+        </button>
+        <button class="optbtn mode" data-mode="pvp">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          <span data-i18n="setup.twoPlayers">2 Players</span>
+        </button>
+      </div>
+
+      <div id="diffSection">
+        <div class="section-label" data-i18n="setup.difficulty">Difficulty</div>
+        <div class="optrow">
+          <button class="optbtn diff active" data-diff="easy"><span data-i18n="setup.easy">Easy</span></button>
+          <button class="optbtn diff" data-diff="medium"><span data-i18n="setup.medium">Medium</span></button>
+        </div>
+        <div class="optrow" style="margin-top:8px;">
+          <button class="optbtn diff" data-diff="hard"><span data-i18n="setup.hard">Hard</span></button>
+          <button class="optbtn diff" data-diff="expert"><span data-i18n="setup.expert">Expert</span></button>
+        </div>
+      </div>
+
+      <div id="playersCountSection" class="hidden">
+        <div class="section-label" data-i18n="setup.playersCount">Number of players</div>
+        <div class="optrow">
+          <button class="optbtn pcount active" data-count="2"><span>2</span></button>
+          <button class="optbtn pcount" data-count="3"><span>3</span></button>
+          <button class="optbtn pcount" data-count="4"><span>4</span></button>
+        </div>
+        <p class="panel-sub" id="pvpNote" data-i18n="setup.pvpNote">2 Players always plays on the full 6×6 board</p>
+      </div>
+
+      <button class="startbtn" id="startBtn">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        <span data-i18n="setup.start">Start Game</span>
+      </button>
+      <button class="quitbtn" id="setupQuitBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 4H6.5A1.5 1.5 0 0 0 5 5.5v13A1.5 1.5 0 0 0 6.5 20H9"/><path d="M13 8l4 4-4 4M17 12H9" stroke-linejoin="round"/></svg>
+        <span data-i18n="setup.quit">Quit</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- PAUSE OVERLAY -->
+  <div class="overlay hidden" id="pauseOverlay">
+    <div class="panel pause-panel">
+      <div class="sheet-handle"></div>
+      <h2 data-i18n="pause.title">Game Paused</h2>
+      <button class="startbtn" id="resumeBtn">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        <span data-i18n="pause.resume">Resume</span>
+      </button>
+      <button class="rematchbtn" id="pauseRestartBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+        <span data-i18n="pause.restart">Restart</span>
+      </button>
+      <button class="quitbtn" id="pauseMenuBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"/></svg>
+        <span data-i18n="pause.home">Back Home</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- HELP OVERLAY -->
+  <div class="overlay hidden" id="helpOverlay">
+    <div class="panel">
+      <div class="sheet-handle"></div>
+      <h2 data-i18n="help.title">How To Play</h2>
+      <ul class="help-list">
+        <li data-i18n="help.line1">Flip two cards per turn to find a matching pair.</li>
+        <li data-i18n="help.line2">If they match, you score a pair and play again.</li>
+        <li data-i18n="help.line3">If they don't match, the cards flip back and the turn changes.</li>
+        <li data-i18n="help.line4">Play against the AI, or 2 players on the same device.</li>
+        <li data-i18n="help.line5">Whoever finds the most pairs wins!</li>
+      </ul>
+      <button class="startbtn" id="helpCloseBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>
+        <span data-i18n="help.close">Got it</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- RESULT OVERLAY -->
+  <div class="overlay hidden" id="resultOverlay">
+    <div class="result-panel">
+      <div class="sheet-handle"></div>
+      <div class="banner" id="resultBanner">YOU WIN!</div>
+      <div class="win-stats win-stats--single">
+        <div class="win-stat"><span data-i18n="result.difficulty">Difficulty</span><strong id="winDifficulty">Easy</strong></div>
+      </div>
+      <button class="rematchbtn" id="playAgainBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+        <span data-i18n="result.playAgain">Play Again</span>
+      </button>
+      <button class="quitbtn" id="newGameBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+        <span data-i18n="result.newGame">New Game</span>
+      </button>
+      <button class="quitbtn" id="resultHomeBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"/></svg>
+        <span data-i18n="pause.home">Back Home</span>
+      </button>
+      <div id="confetti-container"></div>
+    </div>
+  </div>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

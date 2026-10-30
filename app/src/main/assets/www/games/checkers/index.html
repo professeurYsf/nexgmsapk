@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#EAF6FF">
+<title>Checkers</title>
+<link rel="stylesheet" href="../../shared/fonts.css">
+<script src="../../shared/shared.js"></script>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="../../shared/shared.css">
+</head>
+<body>
+
+    <!-- ======================= MAIN MENU ======================= -->
+    <div id="screen-menu" class="menu-screen">
+        <div class="menu-topline">
+            <button class="menu-help" id="btn-help" aria-label="How to play">
+                <svg viewBox="0 0 24 24" class="icon"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.5 9.3a2.5 2.5 0 0 1 4.86.86c0 1.6-2.16 2-2.36 3.3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.15" fill="currentColor"/></svg>
+            </button>
+        </div>
+
+        <div class="menu-content">
+            <div class="menu-logo-badge">
+                <img src="logo.png" alt="Checkers">
+            </div>
+            <h1 class="menu-title" data-i18n="game.title">Checkers</h1>
+            <p class="menu-subtitle" data-i18n="menu.subtitle">Spanish draughts — capture is mandatory</p>
+
+            <div class="setup-list">
+                <div class="setup-group">
+                    <p class="setup-label" data-i18n="setup.mode">Game mode</p>
+                    <div class="optrow mode-select">
+                        <button class="optbtn mode active" data-mode="pvp">
+                            <svg viewBox="0 0 24 24" class="icon" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                            <span data-i18n="setup.twoPlayers">2 Players</span>
+                        </button>
+                        <button class="optbtn mode" data-mode="ai">
+                            <svg viewBox="0 0 24 24" class="icon" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/><line x1="8" y1="16" x2="8" y2="16.01" stroke-width="3"/><line x1="16" y1="16" x2="16" y2="16.01" stroke-width="3"/></svg>
+                            <span data-i18n="setup.vsAI">Vs IA</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="setup-group" id="diffSection">
+                    <p class="setup-label" data-i18n="setup.difficulty">Difficulty</p>
+                    <div class="stepper">
+                        <button id="diff-prev" class="stepper-btn" aria-label="Easier">
+                            <svg viewBox="0 0 24 24" class="icon"><path d="M15 5 8 12l7 7" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </button>
+                        <span id="diff-value" class="stepper-value">Easy</span>
+                        <button id="diff-next" class="stepper-btn" aria-label="Harder">
+                            <svg viewBox="0 0 24 24" class="icon"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="menu-actions">
+                <button id="btn-play" class="menu-btn menu-btn-start">
+                    <svg viewBox="0 0 24 24" class="icon"><path d="M8 5.14v13.72a1 1 0 0 0 1.5.87l11-6.86a1 1 0 0 0 0-1.72l-11-6.86A1 1 0 0 0 8 5.14Z" fill="currentColor"/></svg>
+                    <span id="play-label" data-i18n="menu.play">Play</span>
+                </button>
+                <button id="btn-exit" class="menu-btn menu-btn-exit">
+                    <svg viewBox="0 0 24 24" class="icon"><path d="M9 4H6.5A1.5 1.5 0 0 0 5 5.5v13A1.5 1.5 0 0 0 6.5 20H9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M13 8l4 4-4 4M17 12H9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    <span data-i18n="menu.exit">Quit</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================= GAME SCREEN ======================= -->
+    <div id="screen-game" class="game-screen hidden">
+
+        <div class="top-toolbar">
+            <button id="btn-pause" class="toolbar-btn" aria-label="Pause">
+                <svg viewBox="0 0 24 24" class="icon"><rect x="6" y="4" width="4" height="16" rx="1" fill="currentColor"/><rect x="14" y="4" width="4" height="16" rx="1" fill="currentColor"/></svg>
+            </button>
+
+            <div class="stats-cluster">
+                <span class="stat-chip" id="chipIvory">
+                    <span class="stat-dot dot-ivory"></span>
+                    <span id="ivoryCount">12</span>
+                </span>
+                <span class="stat-chip" id="chipRed">
+                    <span class="stat-dot dot-red"></span>
+                    <span id="redCount">12</span>
+                </span>
+            </div>
+
+            <button id="btn-home" class="toolbar-btn" aria-label="Home">
+                <svg viewBox="0 0 24 24" class="icon"><path d="M4 11.5 12 4l8 7.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 10v8.5a1 1 0 0 0 1 1h3v-5h4v5h3a1 1 0 0 0 1-1V10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <span id="timerDisplay" hidden>00:00</span>
+        </div>
+
+        <div class="board-wrap">
+            <div class="board-frame">
+                <div id="board" class="checkers-board"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================= DIALOGS ======================= -->
+
+    <!-- How To Play -->
+    <div class="overlay hidden" id="helpOverlay">
+        <div class="panel">
+            <div class="sheet-handle"></div>
+            <h2 data-i18n="help.title">How To Play</h2>
+            <ul class="help-list">
+                <li data-i18n="help.li1">Move your pieces diagonally, forward only, one square at a time.</li>
+                <li data-i18n="help.li2">Capturing is mandatory — if a capture is available, you must take it.</li>
+                <li data-i18n="help.li3">If several captures are possible, you must play the one that captures the most pieces.</li>
+                <li data-i18n="help.li4">Reach the last row to crown a king — kings move and capture any distance along the diagonal.</li>
+            </ul>
+            <button class="startbtn" id="helpCloseBtn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>
+                <span data-i18n="help.close">Got it</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Pause -->
+    <div class="overlay hidden" id="pauseOverlay">
+        <div class="panel pause-panel">
+            <div class="sheet-handle"></div>
+            <h2 data-i18n="pause.title">Game Paused</h2>
+            <button class="startbtn" id="resumeBtn">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                <span data-i18n="pause.resume">Resume</span>
+            </button>
+            <button class="rematchbtn" id="pauseRestartBtn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+                <span data-i18n="pause.restart">Restart</span>
+            </button>
+            <button class="quitbtn" id="pauseMenuBtn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"/></svg>
+                <span data-i18n="pause.home">Back Home</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Result -->
+    <div class="overlay hidden" id="resultOverlay">
+        <div class="result-panel">
+            <div class="sheet-handle"></div>
+            <div class="banner" id="resultBanner">You Win!</div>
+            <div class="result-stats">
+                <div class="result-stat"><span data-i18n="result.difficulty">Difficulty</span><strong id="resDifficulty">Easy</strong></div>
+                <div class="result-stat"><span data-i18n="result.time">Time</span><strong id="resTime">00:00</strong></div>
+            </div>
+            <button class="startbtn" id="playAgainBtn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+                <span data-i18n="result.playAgain">Play Again</span>
+            </button>
+            <button class="rematchbtn" id="resultNewGameBtn">
+                <span data-i18n="result.newGame">New Game</span>
+            </button>
+            <button class="quitbtn" id="resultHomeBtn">
+                <span data-i18n="pause.home">Back Home</span>
+            </button>
+        </div>
+    </div>
+
+    <div id="confetti-container"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>

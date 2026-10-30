@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#EAF6FF">
+<title>Sudoku</title>
+<link rel="stylesheet" href="../../shared/fonts.css">
+<script src="../../shared/shared.js"></script>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="../../shared/shared.css">
+</head>
+<body>
+
+    <!-- ======================= MAIN MENU (this game's own home screen) ======================= -->
+    <div id="screen-menu" class="menu-screen">
+        <div class="menu-topline">
+            <button class="menu-help" id="btn-help" aria-label="How to play">
+                <svg viewBox="0 0 24 24" class="icon"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.5 9.3a2.5 2.5 0 0 1 4.86.86c0 1.6-2.16 2-2.36 3.3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.15" fill="currentColor"/></svg>
+            </button>
+        </div>
+
+        <div class="menu-content">
+            <div class="menu-logo-badge">
+                <img src="logo.png" alt="Sudoku">
+            </div>
+            <h1 class="menu-title" data-i18n="game.title">Sudoku</h1>
+            <p class="menu-subtitle" data-i18n="menu.subtitle">Fill the grid using logic alone</p>
+
+            <div class="setup-list">
+                <div class="setup-group">
+                    <p class="setup-label" data-i18n="setup.difficulty">Select difficulty</p>
+                    <div class="stepper">
+                        <button id="diff-prev" class="stepper-btn" aria-label="Easier">
+                            <svg viewBox="0 0 24 24" class="icon"><path d="M15 5 8 12l7 7" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </button>
+                        <span id="diff-value" class="stepper-value">Easy</span>
+                        <button id="diff-next" class="stepper-btn" aria-label="Harder">
+                            <svg viewBox="0 0 24 24" class="icon"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="menu-actions">
+                <button id="btn-play" class="menu-btn menu-btn-start">
+                    <svg viewBox="0 0 24 24" class="icon"><path d="M8 5.14v13.72a1 1 0 0 0 1.5.87l11-6.86a1 1 0 0 0 0-1.72l-11-6.86A1 1 0 0 0 8 5.14Z" fill="currentColor"/></svg>
+                    <span id="setup-play-label" data-i18n="menu.play">Play</span>
+                </button>
+                <button id="btn-exit" class="menu-btn menu-btn-exit">
+                    <svg viewBox="0 0 24 24" class="icon"><path d="M9 4H6.5A1.5 1.5 0 0 0 5 5.5v13A1.5 1.5 0 0 0 6.5 20H9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M13 8l4 4-4 4M17 12H9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    <span data-i18n="menu.exit">Quit</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================= GAME SCREEN ======================= -->
+    <div id="screen-game" class="game-screen hidden">
+
+        <div class="top-toolbar">
+            <button id="btn-pause" class="toolbar-btn" aria-label="Pause">
+                <svg viewBox="0 0 24 24" class="icon"><rect x="6" y="4" width="4" height="16" rx="1" fill="currentColor"/><rect x="14" y="4" width="4" height="16" rx="1" fill="currentColor"/></svg>
+            </button>
+
+            <span class="toolbar-title" data-i18n="game.title">Sudoku</span>
+
+            <button id="btn-home" class="toolbar-btn" aria-label="Home">
+                <svg viewBox="0 0 24 24" class="icon"><path d="M4 11.5 12 4l8 7.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 10v8.5a1 1 0 0 0 1 1h3v-5h4v5h3a1 1 0 0 0 1-1V10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <span id="timerDisplay" hidden>00:00</span>
+        </div>
+
+        <div class="board-wrap">
+            <div id="board" class="sudoku-board"></div>
+        </div>
+
+        <div class="bottom-toolbar">
+            <button id="btn-erase" class="action-tool">
+                <svg viewBox="0 0 24 24" class="icon"><path d="M18 13 11 20H7l-4-4a2 2 0 0 1 0-2.8L13 3l7 7-2 3Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9.5 7.5 16 14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+                <span data-i18n="tool.erase">Erase</span>
+            </button>
+            <button id="btn-hint" class="action-tool">
+                <svg viewBox="0 0 24 24" class="icon"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.6.45.9 1.15.9 1.9V16h5.4v-.3c0-.75.3-1.45.9-1.9A6 6 0 0 0 12 3Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+                <span data-i18n="tool.hint">Hint</span>
+                <span class="tool-badge" id="hintBadge">3</span>
+            </button>
+            <button id="btn-pencil" class="action-tool">
+                <svg viewBox="0 0 24 24" class="icon"><path d="m14.5 5.5 4 4L7 21H3v-4Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="m13 7 4 4" stroke="currentColor" stroke-width="1.8"/></svg>
+                <span data-i18n="tool.pencil">Pencil</span>
+            </button>
+            <div class="action-tool mistakes-chip" aria-label="Mistakes">
+                <svg viewBox="0 0 24 24" class="icon"><path d="M12 8v5M12 16.5h.01" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+                <span id="mistakesDisplay">0/3</span>
+            </div>
+        </div>
+
+        <div class="number-pad" id="number-pad"></div>
+    </div>
+
+    <!-- ======================= DIALOGS ======================= -->
+
+    <!-- Resume previous game? -->
+    <div id="resume-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="sheet-handle"></div>
+            <h2 data-i18n="resume.title">Continue previous game?</h2>
+            <p class="modal-message" data-i18n="resume.body">You have an unfinished puzzle saved on this device.</p>
+            <div class="modal-actions modal-actions-row">
+                <button id="btn-resume-new" class="action-btn secondary-btn">
+                    <span data-i18n="resume.newGame">New Game</span>
+                </button>
+                <button id="btn-resume-continue" class="action-btn primary-btn">
+                    <span data-i18n="resume.continue">Continue</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- How To Play -->
+    <div id="help-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="sheet-handle"></div>
+            <h2 data-i18n="help.title">How To Play</h2>
+            <ul class="help-list">
+                <li data-i18n="help.li1">Fill every row, column, and 3×3 box with the numbers 1 to 9.</li>
+                <li data-i18n="help.li2">No number can repeat inside the same row, column, or box.</li>
+                <li data-i18n="help.li3">Tap a cell, then tap a number to place it. Use Pencil to jot down candidates.</li>
+                <li data-i18n="help.li4">Three mistakes end the game — think before you tap.</li>
+            </ul>
+            <div class="modal-actions">
+                <button id="btn-help-close" class="action-btn primary-btn">
+                    <span data-i18n="help.close">Got it</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pause -->
+    <div id="pause-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="sheet-handle"></div>
+            <h2 data-i18n="pause.title">Game Paused</h2>
+            <div class="modal-actions">
+                <button id="btn-resume-game" class="action-btn primary-btn">
+                    <svg viewBox="0 0 24 24" class="icon"><path d="M8 5.14v13.72a1 1 0 0 0 1.5.87l11-6.86a1 1 0 0 0 0-1.72l-11-6.86A1 1 0 0 0 8 5.14Z" fill="currentColor"/></svg>
+                    <span data-i18n="pause.resume">Resume</span>
+                </button>
+                <button id="btn-pause-restart" class="action-btn secondary-btn">
+                    <svg viewBox="0 0 24 24" class="icon"><path d="M4.6 12a7.4 7.4 0 1 1 2.2 5.3" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"/><path d="M4.3 17.2 4.6 12l5 1.6" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    <span data-i18n="pause.restart">Restart</span>
+                </button>
+                <button id="btn-pause-menu" class="action-btn secondary-btn">
+                    <svg viewBox="0 0 24 24" class="icon"><path d="M4 11.5 12 4l8 7.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 10v8.5a1 1 0 0 0 1 1h3v-5h4v5h3a1 1 0 0 0 1-1V10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    <span data-i18n="pause.menu">Back to Home</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Exit confirmation -->
+    <div id="exit-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="sheet-handle"></div>
+            <h2 data-i18n="exit.title">Exit Game</h2>
+            <p class="modal-message" data-i18n="exit.message">Are you sure you want to exit?</p>
+            <div class="modal-actions modal-actions-row">
+                <button id="btn-exit-no" class="action-btn secondary-btn">
+                    <span data-i18n="exit.no">No</span>
+                </button>
+                <button id="btn-exit-yes" class="action-btn danger-btn">
+                    <span data-i18n="exit.yes">Yes</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Over (3 mistakes) -->
+    <div id="gameover-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="sheet-handle"></div>
+            <h2 class="danger-title" data-i18n="over.title">Game Over</h2>
+            <p class="modal-message" data-i18n="over.body">You've made 3 mistakes.</p>
+            <div class="modal-actions">
+                <button id="btn-over-restart" class="action-btn primary-btn">
+                    <svg viewBox="0 0 24 24" class="icon"><path d="M4.6 12a7.4 7.4 0 1 1 2.2 5.3" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"/><path d="M4.3 17.2 4.6 12l5 1.6" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    <span data-i18n="over.restart">Restart</span>
+                </button>
+                <button id="btn-over-home" class="action-btn secondary-btn">
+                    <span data-i18n="pause.menu">Back to Home</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Victory -->
+    <div id="win-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="sheet-handle"></div>
+            <h2 data-i18n="win.title">Congratulations!</h2>
+            <div class="win-stats">
+                <div class="win-stat"><span data-i18n="win.difficulty">Difficulty</span><strong id="winDifficulty">Easy</strong></div>
+                <div class="win-stat"><span data-i18n="win.time">Time</span><strong id="winTime">00:00</strong></div>
+                <div class="win-stat"><span data-i18n="win.mistakes">Mistakes</span><strong id="winMistakes">0</strong></div>
+            </div>
+            <div class="modal-actions">
+                <button id="btn-play-again" class="action-btn primary-btn">
+                    <svg viewBox="0 0 24 24" class="icon"><path d="M4.6 12a7.4 7.4 0 1 1 2.2 5.3" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"/><path d="M4.3 17.2 4.6 12l5 1.6" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    <span data-i18n="win.playAgain">Play Again</span>
+                </button>
+                <button id="btn-win-newgame" class="action-btn secondary-btn">
+                    <span data-i18n="resume.newGame">New Game</span>
+                </button>
+                <button id="btn-win-home" class="action-btn secondary-btn">
+                    <span data-i18n="pause.menu">Back to Home</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="confetti-container"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#EAF6FF">
+<title>Coin Shuffle Memory</title>
+<link rel="stylesheet" href="../../shared/fonts.css">
+<script src="../../shared/shared.js"></script>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="../../shared/shared.css">
+</head>
+<body>
+<div id="app">
+
+  <header class="topbar">
+    <button class="iconbtn" id="pauseBtn" aria-label="Pause">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>
+    </button>
+    <div class="hud" id="hud"></div>
+    <button class="iconbtn" id="homeBtn" aria-label="Home">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"/></svg>
+    </button>
+  </header>
+
+  <div class="msg" id="msg">
+    <span class="msg-text" id="msgText"></span>
+    <span class="msg-count" id="msgCount"></span>
+    <div class="bar"><i id="bar"></i></div>
+  </div>
+
+  <main class="stage" id="stage">
+    <div class="picks top" id="picksTop"></div>
+    <div class="area" id="area"></div>
+    <div class="picks bottom" id="picksBot"></div>
+  </main>
+
+  <!-- SETUP -->
+  <div class="overlay" id="setupOverlay">
+    <div class="panel">
+      <div class="sheet-handle"></div>
+      <button class="panel-help" id="helpBtn" aria-label="How to play">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.3a2.5 2.5 0 0 1 4.86.86c0 1.6-2.16 2-2.36 3.3" stroke-linecap="round"/><circle cx="12" cy="17" r="1.1" fill="currentColor" stroke="none"/></svg>
+      </button>
+      <div class="setup-grid">
+        <div class="setup-head">
+          <div class="panel-logo"><img src="logo.png" alt=""></div>
+          <h2 data-i18n="title">Coin Shuffle Memory</h2>
+          <p class="panel-sub" data-i18n="subtitle">Follow the coin. Trust your memory.</p>
+        </div>
+        <div class="setup-body">
+          <div class="section-label" data-i18n="mode">Game mode</div>
+          <div class="optrow">
+            <button class="optbtn mode active" data-mode="solo">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>
+              <span data-i18n="solo">1 Player</span>
+            </button>
+            <button class="optbtn mode" data-mode="duo">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              <span data-i18n="duo">2 Players</span>
+            </button>
+          </div>
+          <div id="levelSection">
+            <p class="panel-sub note" data-i18n="soloNote">4 rounds, harder each time: Easy, Medium, Hard, Very Hard.</p>
+            <p class="best-line"><span data-i18n="best">Best</span> <strong id="bestVal">–</strong></p>
+          </div>
+          <p class="panel-sub note hidden" id="duoNote" data-i18n="duoNote">4 stages, getting harder each time. P1 follows the red coin, P2 the blue one.</p>
+          <p class="panel-sub note" data-i18n="rotateTip">Tip: rotate your phone to landscape for a bigger board.</p>
+          <button class="startbtn" id="startBtn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg><span data-i18n="start">Start Game</span></button>
+          <button class="quitbtn" id="setupQuit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 4H6.5A1.5 1.5 0 0 0 5 5.5v13A1.5 1.5 0 0 0 6.5 20H9"/><path d="M13 8l4 4-4 4M17 12H9" stroke-linejoin="round"/></svg><span data-i18n="quit">Quit</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAUSE -->
+  <div class="overlay hidden" id="pauseOverlay">
+    <div class="panel pause-panel">
+      <div class="sheet-handle"></div>
+      <h2 data-i18n="paused">Game Paused</h2>
+      <button class="startbtn" id="resumeBtn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg><span data-i18n="resume">Resume</span></button>
+      <button class="rematchbtn" id="pauseRestart"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg><span data-i18n="restart">Restart</span></button>
+      <button class="quitbtn" id="pauseHome"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"/></svg><span data-i18n="home">Back Home</span></button>
+    </div>
+  </div>
+
+  <!-- HELP -->
+  <div class="overlay hidden" id="helpOverlay">
+    <div class="panel">
+      <div class="sheet-handle"></div>
+      <h2 data-i18n="helpTitle">How To Play</h2>
+      <ul class="help-list">
+        <li data-i18n="h1">Memorise where the special coin is: red for you (and blue for Player 2).</li>
+        <li data-i18n="h2">All coins flip face down and swap places.</li>
+        <li data-i18n="h3">When they stop you have 5 seconds to pick the coin you followed. No pick = stage lost.</li>
+        <li data-i18n="h4">1 player: 4 coins, 4 rounds: Easy, Medium, Hard, Very Hard.</li>
+        <li data-i18n="h5">2 players: 5 coins, 4 stages. Each player picks on their own side (P1 bottom, P2 top). You may pick the same coin.</li>
+      </ul>
+      <button class="startbtn" id="helpClose"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg><span data-i18n="gotit">Got it</span></button>
+    </div>
+  </div>
+
+  <!-- RESULT -->
+  <div class="overlay hidden" id="resultOverlay">
+    <div class="result-panel">
+      <div class="sheet-handle"></div>
+      <div class="banner" id="banner"></div>
+      <p class="record hidden" id="recordMsg"></p>
+      <div class="win-stats" id="resultStats"></div>
+      <div class="rounds" id="roundsList"></div>
+      <button class="rematchbtn" id="againBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg><span data-i18n="again">Play Again</span></button>
+      <button class="quitbtn" id="newBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg><span data-i18n="newGame">New Game</span></button>
+      <button class="quitbtn" id="resultHome"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"/></svg><span data-i18n="home">Back Home</span></button>
+      <div id="confetti-container"></div>
+    </div>
+  </div>
+</div>
+<script src="script.js"></script>
+</body>
+</html>
