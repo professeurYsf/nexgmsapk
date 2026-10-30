@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#EAF6FF">
+<title>Puzzle Numérique</title>
+<link rel="stylesheet" href="../../shared/fonts.css">
+<script src="../../shared/shared.js"></script>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="../../shared/shared.css">
+</head>
+<body>
+<div id="app">
+
+  <!-- Top bar: Home + title + Pause -->
+  <header class="topbar">
+    <button class="iconbtn" id="btnHome" aria-label="Accueil">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"/></svg>
+    </button>
+
+    <span class="topbar-title" data-i18n="game.title">Puzzle Numérique</span>
+
+    <button class="iconbtn" id="btnPause" aria-label="Pause">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>
+    </button>
+  </header>
+
+  <!-- Stats + quick actions -->
+  <div class="statsbar">
+    <div class="stat-chip">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17 4h3a1 1 0 0 1 1 1v1a4 4 0 0 1-4 4M7 4H4a1 1 0 0 0-1 1v1a4 4 0 0 0 4 4M7 4h10v6a5 5 0 0 1-10 0V4z"/><path d="M9 20h6M12 15v5" stroke="currentColor" stroke-width="1.6" fill="none"/></svg>
+      <span id="bestDisplay">—</span>
+    </div>
+    <div class="stat-chip">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 8v8l8 6 8-6V8l-8-6Z"/></svg>
+      <span id="movesDisplay">0</span>
+    </div>
+    <div class="stat-chip">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>
+      <span id="timerDisplay">00:00</span>
+    </div>
+
+    <button class="chipbtn" id="btnNew" aria-label="Nouvelle grille">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+    </button>
+
+    <button class="chipbtn" id="btnMoveTwo" aria-label="Déplacer plusieurs tuiles" aria-pressed="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2.5" y="8" width="6.5" height="8" rx="1.6"/><rect x="10.5" y="8" width="6.5" height="8" rx="1.6" opacity=".55"/><path d="M19 12h2.5M20 10.5 22 12l-2 1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+  </div>
+
+  <!-- Board -->
+  <div class="board-wrap">
+    <div class="board-frame">
+      <div id="main-board" class="board sliding-board"></div>
+    </div>
+  </div>
+
+  <!-- SETUP OVERLAY (game's own start screen, matches card → Commencer / Exit) -->
+  <div class="overlay" id="setupOverlay">
+    <div class="panel">
+      <div class="sheet-handle"></div>
+
+      <button class="panel-help" id="btnHelp" aria-label="Comment jouer">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.3a2.5 2.5 0 0 1 4.86.86c0 1.6-2.16 2-2.36 3.3" stroke-linecap="round"/><circle cx="12" cy="17" r="1.1" fill="currentColor" stroke="none"/></svg>
+      </button>
+
+      <div class="panel-logo">
+        <img src="logo.png" alt="Puzzle Numérique">
+      </div>
+      <h2 data-i18n="game.title">Puzzle Numérique</h2>
+      <p class="panel-sub" data-i18n="game.subtitle">Remets les tuiles dans le bon ordre</p>
+
+      <div class="section-label" data-i18n="setup.tileType">Type de tuiles</div>
+      <div class="optrow">
+        <button class="optbtn mode active" id="typeNumbers" data-type="numbers">
+          <span data-i18n="setup.numbers">Chiffres</span>
+        </button>
+        <button class="optbtn mode" id="typeLetters" data-type="letters">
+          <span data-i18n="setup.letters">Lettres</span>
+        </button>
+      </div>
+
+      <div class="section-label" data-i18n="setup.gridSize">Taille de la grille</div>
+      <div class="optrow">
+        <button class="optbtn diff active" id="size4" data-size="4">4 × 4</button>
+        <button class="optbtn diff" id="size5" data-size="5">5 × 5</button>
+      </div>
+
+      <button class="startbtn" id="btnStart">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        <span data-i18n="game.start">Commencer</span>
+      </button>
+      <button class="quitbtn" id="btnExitSetup">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 4H6.5A1.5 1.5 0 0 0 5 5.5v13A1.5 1.5 0 0 0 6.5 20H9"/><path d="M13 8l4 4-4 4M17 12H9" stroke-linejoin="round"/></svg>
+        <span data-i18n="game.quit">Quitter</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- PAUSE OVERLAY -->
+  <div class="overlay hidden" id="pauseOverlay">
+    <div class="panel pause-panel">
+      <div class="sheet-handle"></div>
+      <h2 data-i18n="pause.title">🎮 Jeu en pause</h2>
+      <button class="startbtn" id="btnResume">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        <span data-i18n="pause.resume">Continuer</span>
+      </button>
+      <button class="rematchbtn" id="btnPauseRestart">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M1 4v6h6" stroke-linejoin="round"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" stroke-linejoin="round"/></svg>
+        <span data-i18n="pause.restart">Recommencer</span>
+      </button>
+      <button class="quitbtn" id="btnPauseMenu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"/></svg>
+        <span data-i18n="pause.menu">Menu des jeux</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- HELP OVERLAY -->
+  <div class="overlay hidden" id="helpOverlay">
+    <div class="panel">
+      <div class="sheet-handle"></div>
+      <h2 data-i18n="help.title">Comment jouer</h2>
+      <ul class="help-list">
+        <li data-i18n="help.li1">Range les chiffres (ou les lettres) dans l'ordre.</li>
+        <li data-i18n="help.li2">Touche une tuile voisine de la case vide pour la déplacer.</li>
+        <li data-i18n="help.li3">Active « Déplacer plusieurs tuiles » pour glisser toute une ligne d'un coup.</li>
+        <li data-i18n="help.li4">Termine en un minimum de coups !</li>
+      </ul>
+      <button class="startbtn" id="btnHelpClose">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>
+        <span data-i18n="help.close">Compris</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- RESULT OVERLAY -->
+  <div class="overlay hidden" id="resultOverlay">
+    <div class="result-panel">
+      <div class="sheet-handle"></div>
+      <div class="banner" id="resultBanner" data-i18n="result.banner">🎉 Félicitations !</div>
+      <p id="newRecord" class="new-record hidden" data-i18n="result.record">Nouveau record !</p>
+      <div class="win-stats">
+        <div class="win-stat"><span data-i18n="result.moves">Coups</span><strong id="winMoves">0</strong></div>
+        <div class="win-stat"><span data-i18n="result.time">Temps</span><strong id="winTime">00:00</strong></div>
+        <div class="win-stat"><span data-i18n="result.best">Record</span><strong id="winBest">—</strong></div>
+      </div>
+      <button class="rematchbtn" id="btnPlayAgain">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M1 4v6h6" stroke-linejoin="round"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" stroke-linejoin="round"/></svg>
+        <span data-i18n="result.again">Rejouer</span>
+      </button>
+      <button class="quitbtn" id="btnResultMenu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"/></svg>
+        <span data-i18n="result.menu">Nouvelle partie</span>
+      </button>
+    </div>
+  </div>
+
+  <div id="confetti-container"></div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

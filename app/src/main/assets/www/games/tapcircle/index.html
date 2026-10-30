@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#EAF6FF">
+<title>Tap the Circle</title>
+<link rel="stylesheet" href="../../shared/fonts.css">
+<script src="../../shared/shared.js"></script>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="../../shared/shared.css">
+</head>
+<body>
+<div id="app">
+
+  <header class="topbar">
+    <button class="iconbtn" id="homeBtn" aria-label="Home">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"/></svg>
+    </button>
+    <span class="topbar-title" data-i18n="game.title">Tap the Circle</span>
+    <button class="iconbtn" id="pauseBtn" aria-label="Pause">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>
+    </button>
+  </header>
+
+  <!-- Solo: score / best / hearts -->
+  <div class="statbar" id="soloBar">
+    <div class="chip"><span class="chip-l" data-i18n="stat.score">Score</span><b id="scoreNum">0</b></div>
+    <div class="chip"><span class="chip-l" data-i18n="stat.best">Best</span><b id="bestNum">0</b></div>
+    <div class="hearts" id="hearts"></div>
+  </div>
+
+  <!-- Versus: P1 / timer / P2 -->
+  <div class="vsbar hidden" id="vsBar">
+    <div class="pchip p1" id="chipP1"><span class="pn" id="nameP1">Player 1</span><b id="scoreP1">0</b></div>
+    <div class="timer-chip" id="timerChip"><span data-i18n="stat.time">Time</span><b id="timerNum">1:00</b></div>
+    <div class="pchip p2" id="chipP2"><span class="pn" id="nameP2">Player 2</span><b id="scoreP2">0</b></div>
+  </div>
+
+  <div class="board-wrap" id="boardWrap">
+    <div class="board-frame"><canvas id="board"></canvas></div>
+  </div>
+
+  <!-- SETUP -->
+  <div class="overlay" id="setupOverlay">
+    <div class="panel">
+      <div class="sheet-handle"></div>
+      <button class="panel-help" id="helpBtn" aria-label="How to play"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.3a2.5 2.5 0 0 1 4.86.86c0 1.6-2.36 2-2.36 3.6"/><circle cx="12" cy="17" r=".6" fill="currentColor"/></svg></button>
+      <div class="panel-logo"><img src="logo.png" alt="Tap the Circle"></div>
+      <h2 data-i18n="game.title">Tap the Circle</h2>
+      <p class="panel-sub" data-i18n="setup.subtitle">Tap at the right moment to hit the target</p>
+
+      <div class="section-label" data-i18n="setup.mode">Mode</div>
+      <div class="optrow two" id="modeRow">
+        <button class="optbtn active" data-mode="solo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><span data-i18n="mode.solo">Solo</span></button>
+        <button class="optbtn" data-mode="vs"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.4"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><circle cx="17.5" cy="9" r="2.8"/><path d="M17 14.2A5.5 5.5 0 0 1 21.8 20"/></svg><span data-i18n="mode.vs">2 players</span></button>
+      </div>
+
+      <div id="starterBox" class="hidden">
+        <div class="section-label" data-i18n="setup.starter">Who starts?</div>
+        <div class="optrow two" id="starterRow">
+          <button class="optbtn active" data-starter="1"><span data-i18n="player.1">Player 1</span></button>
+          <button class="optbtn" data-starter="2"><span data-i18n="player.2">Player 2</span></button>
+        </div>
+        <p class="panel-sub" style="margin:12px 0 0" data-i18n="setup.vsnote">Each player gets 1 minute. Highest score wins.</p>
+      </div>
+
+      <button class="startbtn" id="startBtn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg><span data-i18n="setup.start">Start</span></button>
+      <button class="quitbtn" id="setupQuitBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4H6.5A1.5 1.5 0 0 0 5 5.5v13A1.5 1.5 0 0 0 6.5 20H9"/><path d="M16 8l4 4-4 4M20 12H9"/></svg><span data-i18n="setup.quit">Quit</span></button>
+    </div>
+  </div>
+
+  <!-- TURN (versus: hand the phone over) -->
+  <div class="overlay hidden" id="turnOverlay">
+    <div class="panel pause-panel">
+      <div class="sheet-handle"></div>
+      <div class="turn-who p1" id="turnWho">Player 1</div>
+      <p class="turn-note" data-i18n="turn.note">You have 60 seconds. Tap when the dot is in the target!</p>
+      <p class="turn-recap hidden" id="turnRecap"></p>
+      <button class="startbtn" id="turnGoBtn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg><span data-i18n="turn.go">I’m ready</span></button>
+      <button class="quitbtn" id="turnMenuBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"/></svg><span data-i18n="pause.menu">Menu</span></button>
+    </div>
+  </div>
+
+  <!-- PAUSE -->
+  <div class="overlay hidden" id="pauseOverlay">
+    <div class="panel pause-panel">
+      <div class="sheet-handle"></div>
+      <h2 data-i18n="pause.title">Game Paused</h2>
+      <button class="startbtn" id="resumeBtn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg><span data-i18n="pause.resume">Resume</span></button>
+      <button class="rematchbtn" id="pauseRestartBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg><span data-i18n="pause.restart">Restart</span></button>
+      <button class="quitbtn" id="pauseMenuBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"/></svg><span data-i18n="pause.menu">Menu</span></button>
+    </div>
+  </div>
+
+  <!-- HELP -->
+  <div class="overlay hidden" id="helpOverlay">
+    <div class="panel">
+      <div class="sheet-handle"></div>
+      <h2 data-i18n="help.title">How To Play</h2>
+      <ul class="help-list">
+        <li data-i18n="help.line1"></li><li data-i18n="help.line2"></li><li data-i18n="help.line3"></li><li data-i18n="help.line4"></li>
+      </ul>
+      <button class="startbtn" id="helpCloseBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg><span data-i18n="help.close">Got it</span></button>
+    </div>
+  </div>
+
+  <!-- RESULT -->
+  <div class="overlay hidden" id="resultOverlay">
+    <div class="result-panel">
+      <div class="sheet-handle"></div>
+      <div class="banner" id="resBanner">Game over</div>
+      <div id="resSolo">
+        <p class="new-record hidden" id="resRecord" data-i18n="result.record">New record!</p>
+        <div class="win-stats">
+          <div class="win-stat"><span data-i18n="stat.score">Score</span><b id="resScore">0</b></div>
+          <div class="win-stat"><span data-i18n="stat.best">Best</span><b id="resBest">0</b></div>
+        </div>
+      </div>
+      <div id="resVs" class="hidden">
+        <div class="vs-result">
+          <div class="vs-card" id="vsCard1"><span id="vsName1">Player 1</span><b id="vsScore1">0</b></div>
+          <div class="vs-card" id="vsCard2"><span id="vsName2">Player 2</span><b id="vsScore2">0</b></div>
+        </div>
+      </div>
+      <button class="rematchbtn" id="resAgainBtn" style="margin-top:0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg><span data-i18n="result.again">Play again</span></button>
+      <button class="quitbtn" id="resMenuBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span data-i18n="result.menu">Menu</span></button>
+    </div>
+  </div>
+
+</div>
+<script src="script.js"></script>
+</body>
+</html>

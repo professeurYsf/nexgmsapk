@@ -1,0 +1,333 @@
+/* =========================================================
+   FIVE IN A ROW — same design system as Game Collection
+   ========================================================= */
+:root{
+  --bg-sky-top:#EAF6FF;
+  --bg-sky-bot:#DCF0FF;
+  --surface:#FFFFFF;
+  --surface-soft:#F3FAFF;
+  --border:#D7EAF7;
+  --border-soft:#E4F2FB;
+
+  --text-hi:#26344D;
+  --text-lo:#6E7F9B;
+  --text-faint:#9FB0C7;
+
+  --violet:#6C5CE7;
+  --violet-deep:#4B3AC9;
+  --cyan:#17B6CE;
+  --cyan-deep:#0D8CA0;
+  --coral:#FF5E72;
+  --coral-deep:#D93B52;
+  --amber:#FFA93E;
+  --amber-deep:#E8830E;
+  --mint:#1FC79B;
+  --mint-deep:#0FA37D;
+
+  --shadow-card:0 10px 24px -8px rgba(43,58,85,0.16);
+  --shadow-pop:0 22px 48px -14px rgba(30,45,70,0.28);
+
+  --font-display:'Fredoka', 'Baloo 2', ui-rounded, 'Segoe UI Rounded', system-ui, sans-serif;
+  --font-body:'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  --ease-out:cubic-bezier(.16,1,.3,1);
+  --ease-spring:cubic-bezier(.34,1.56,.64,1);
+
+  /* ---- fluid radii ---- */
+  --radius-xl:clamp(20px, 3.2vw, 26px);
+  --radius-lg:clamp(15px, 2.6vw, 20px);
+  --radius-md:clamp(11px, 1.8vw, 14px);
+  --radius-sm:clamp(8px, 1.3vw, 10px);
+
+  /* ---- fluid spacing scale ---- */
+  --space-1:clamp(4px, 0.9vw, 8px);
+  --space-2:clamp(8px, 1.6vw, 14px);
+  --space-3:clamp(13px, 2.4vw, 20px);
+  --space-4:clamp(16px, 3.2vw, 28px);
+  --space-5:clamp(22px, 4.4vw, 40px);
+
+  /* ---- fluid type scale ---- */
+  --text-xs:clamp(10px, 1.7vw, 11.5px);
+  --text-sm:clamp(11.5px, 1.9vw, 13.5px);
+  --text-md:clamp(13px, 2.1vw, 15px);
+  --text-base:clamp(14px, 2.3vw, 16px);
+  --text-lg:clamp(16px, 2.7vw, 20px);
+  --text-xl:clamp(19px, 3.4vw, 24px);
+  --text-2xl:clamp(23px, 4.4vw, 32px);
+
+  /* ---- fluid control sizes ---- */
+  --icon-btn:clamp(38px, 6vw, 46px);
+  --avatar-size:clamp(38px, 6.4vw, 48px);
+  --logo-size:clamp(72px, 11vw, 96px);
+
+  /* ---- responsive shell width (mobile-first, widened by breakpoints below) ---- */
+  --shell-max:min(560px, 94vw);
+
+  color-scheme: light;
+}
+
+/* Tablet range: give the shell noticeably more breathing room (board benefits most) */
+@media (min-width: 600px){
+  :root{ --shell-max:min(760px, 90vw); }
+}
+
+/* Desktop / large screens: cap growth so the UI stays compact and intentional */
+@media (min-width: 1024px){
+  :root{ --shell-max:min(880px, 60vw); }
+}
+
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent; user-select:none;}
+html,body{margin:0; padding:0; height:100%; width:100%; overflow:hidden;}
+body{
+  height:100dvh;
+  height:calc(var(--app-vh, 1vh) * 100);
+  background:linear-gradient(180deg, var(--bg-sky-top) 0%, var(--bg-sky-bot) 100%);
+  font-family:var(--font-body);
+  color:var(--text-hi);
+  -webkit-font-smoothing:antialiased;
+}
+h2{margin:0; font-family:var(--font-display);}
+p{margin:0;}
+img,svg{display:block;}
+button{ font-family:inherit; color:inherit; background:none; border:0; cursor:pointer; }
+button:active{ transform:scale(0.96); }
+button{ transition:transform .12s var(--ease-out), background .15s, box-shadow .15s; }
+
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important;}
+}
+
+#app{
+  display:flex; flex-direction:column; width:100%; max-width:var(--shell-max); margin:0 auto;
+  position:relative;
+  overflow:hidden;
+  /* dvh first as a CSS-only baseline, then overridden by the JS-measured
+     --app-vh (set from window.innerHeight — see script.js). This avoids
+     relying solely on dvh, which some WebViews (Android WebView, older
+     Sketchware builds) support inconsistently and can report larger than
+     the real visible area, causing the board to overflow its frame. */
+  height:100dvh;
+  height:calc(var(--app-vh, 1vh) * 100);
+}
+
+/* ===== TOP BAR ===== */
+.topbar{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:calc(var(--space-2) + env(safe-area-inset-top)) var(--space-3) var(--space-1); flex-shrink:0;
+}
+.iconbtn{
+  width:var(--icon-btn); height:var(--icon-btn); border-radius:var(--radius-md);
+  background:var(--surface); border:1px solid var(--border); color:var(--violet-deep);
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:var(--shadow-card); flex-shrink:0;
+}
+.iconbtn svg{ width:44%; height:44%; }
+.topbar-title{
+  font-family:var(--font-display); font-weight:600; font-size:var(--text-base);
+  color:var(--violet-deep); letter-spacing:0.01em;
+}
+
+/* ===== PLAYER BARS ===== */
+.playerbar{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:var(--space-1) var(--space-3); flex-shrink:0; gap:var(--space-2);
+}
+.player{
+  display:flex; align-items:center; gap:var(--space-2);
+  background:var(--surface); border:1px solid var(--border);
+  padding:var(--space-2) var(--space-3) var(--space-2) var(--space-1);
+  border-radius:999px;
+  flex:1; min-width:0;
+  box-shadow:var(--shadow-card);
+  transition: box-shadow .25s, border-color .25s, transform .2s;
+}
+.player.reverse{flex-direction:row-reverse; padding:var(--space-2) var(--space-1) var(--space-2) var(--space-3);}
+.player.active-turn{
+  border-color: var(--mint);
+  box-shadow:0 0 0 2px rgba(31,199,155,.25), var(--shadow-card);
+  transform:translateY(-1px);
+}
+.avatar{
+  width:var(--avatar-size); height:var(--avatar-size); border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  position:relative; flex-shrink:0;
+  color:#fff;
+}
+.avatar svg{ width:50%; height:50%; }
+.player.card--coral .avatar, .avatar.card--coral{ background:linear-gradient(160deg, var(--coral), var(--coral-deep)); }
+.player.card--violet .avatar, .avatar.card--violet{ background:linear-gradient(160deg, var(--violet), var(--violet-deep)); }
+.avatar .badge{
+  position:absolute; bottom:-2px; left:-2px;
+  width:clamp(15px, 2.4vw, 18px); height:clamp(15px, 2.4vw, 18px); border-radius:50%;
+  background:#fff; border:2px solid var(--surface);
+  display:flex;align-items:center;justify-content:center;
+  font-size:9px; font-weight:800; font-family:var(--font-display);
+  box-shadow:0 2px 5px rgba(0,0,0,.15);
+}
+.player.card--coral .avatar .badge{ color:var(--coral-deep); }
+.player.card--violet .avatar .badge{ color:var(--violet-deep); }
+.turn-dot{
+  width:9px; height:9px; border-radius:50%;
+  background:var(--mint);
+  box-shadow:0 0 0 3px rgba(31,199,155,.18);
+  opacity:0; transform:scale(.6);
+  transition:opacity .25s, transform .25s;
+  animation:turnPulse 1.4s ease-in-out infinite;
+}
+.turn-dot.on{ opacity:1; transform:scale(1); }
+@keyframes turnPulse{
+  0%,100%{ box-shadow:0 0 0 3px rgba(31,199,155,.18); }
+  50%{ box-shadow:0 0 0 6px rgba(31,199,155,.1); }
+}
+.pname{font-weight:700; font-size:var(--text-sm); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:clamp(80px, 22vw, 160px); color:var(--text-hi);}
+.pscore{display:flex; align-items:center; gap:4px; font-size:var(--text-xs); font-weight:700; color:var(--text-lo);}
+.pscore svg{width:12px;height:12px; color:var(--amber-deep);}
+.pinfo{display:flex; flex-direction:column; gap:2px; min-width:0;}
+.pinfo.reverse{align-items:flex-end;}
+.pname-row{display:flex; align-items:center; gap:6px;}
+.pinfo.reverse .pname-row{flex-direction:row-reverse;}
+
+/* ===== BOARD =====
+   The canvas is sized in JS from the real space available in .board-wrap
+   (both width AND height are measured), so it stays a perfect square and
+   never overflows, in any orientation, on any device. See resizeCanvas()
+   in script.js — no fixed, device-specific numbers are used there either. */
+.board-wrap{
+  flex:1; display:flex; align-items:center; justify-content:center;
+  padding:var(--space-1) var(--space-2) var(--space-3); min-height:0; min-width:0;
+  overflow:hidden;
+}
+.board-frame{
+  background:var(--surface);
+  border-radius:var(--radius-lg);
+  padding:var(--space-1);
+  box-shadow:var(--shadow-pop);
+  border:1px solid var(--border);
+  max-width:100%;
+  max-height:100%;
+  overflow:hidden; /* the canvas is sized in JS; this guarantees it can never visually poke past the rounded card even if a measurement is momentarily stale */
+}
+#board{
+  background:#ffffff; border-radius:calc(var(--radius-lg) - 6px);
+  touch-action:none;
+  display:block;
+}
+
+/* ===== OVERLAYS ===== */
+.overlay{
+  position:absolute; inset:0; background:rgba(38,52,77,.42);
+  backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px);
+  display:flex; align-items:flex-end; justify-content:center;
+  z-index:50;
+}
+.hidden{display:none !important;}
+
+.sheet-handle{
+  width:38px; height:5px; border-radius:3px;
+  background:var(--border);
+  margin:0 auto var(--space-3);
+}
+
+.panel{
+  background:var(--surface); border-radius:28px 28px 0 0; padding:var(--space-3) var(--space-4) calc(var(--space-5) + env(safe-area-inset-bottom));
+  width:100%; max-width:var(--shell-max); box-shadow:var(--shadow-pop);
+  border:1px solid var(--border); border-bottom:none;
+  animation:sheetUp .32s var(--ease-out);
+  position:relative;
+  max-height:92%;
+  overflow-y:auto;
+}
+@keyframes sheetUp{ from{ transform:translateY(30px); opacity:0;} to{ transform:translateY(0); opacity:1;} }
+
+.panel-help{
+  position:absolute; top:var(--space-3); left:var(--space-3);
+  width:clamp(34px, 5.2vw, 40px); height:clamp(34px, 5.2vw, 40px); border-radius:var(--radius-md);
+  background:var(--surface-soft); border:1px solid var(--border); color:var(--text-lo);
+  display:flex; align-items:center; justify-content:center;
+}
+.panel-help svg{ width:18px; height:18px; }
+
+.help-list{
+  margin:0; padding:0 0 0 20px;
+  color:var(--text-lo); font-size:var(--text-sm); line-height:1.7;
+}
+.help-list li{ margin-bottom:6px; }
+
+.panel-logo{
+  width:var(--logo-size); height:var(--logo-size); margin:2px auto var(--space-2);
+  border-radius:24%;
+  overflow:hidden;
+  box-shadow:var(--shadow-card);
+}
+.panel-logo img{ width:100%; height:100%; object-fit:cover; }
+
+.panel h2{
+  text-align:center; margin:0 0 4px; font-size:var(--text-xl); font-weight:700;
+  color:var(--text-hi); letter-spacing:.2px;
+}
+.panel-sub{
+  text-align:center; font-size:var(--text-sm); color:var(--text-lo); margin-bottom:var(--space-4);
+}
+.panel .section-label{font-size:var(--text-xs); color:var(--text-faint); margin:var(--space-4) 2px var(--space-2); font-weight:700; letter-spacing:.6px; text-transform:uppercase;}
+.optrow{display:flex; gap:var(--space-2); flex-wrap:wrap;}
+.optbtn{
+  flex:1; min-width:100px; padding:var(--space-3) var(--space-2); border-radius:var(--radius-md);
+  border:1.5px solid var(--border); background:var(--surface-soft); color:var(--text-lo);
+  font-weight:700; font-size:var(--text-sm); cursor:pointer;
+  display:flex; align-items:center; justify-content:center; gap:8px;
+}
+.optbtn svg{ width:16px; height:16px; flex-shrink:0; }
+.optbtn.active{
+  border-color:var(--violet); background:rgba(108,92,231,.10); color:var(--violet-deep);
+}
+.optbtn.diff.active{border-color:var(--cyan); background:rgba(23,182,206,.12); color:var(--cyan-deep);}
+
+.startbtn, .rematchbtn, .quitbtn{
+  width:100%; padding:var(--space-3); border-radius:999px; border:none; margin-top:var(--space-2);
+  font-size:var(--text-base); font-weight:700; cursor:pointer;
+  display:flex; align-items:center; justify-content:center; gap:8px;
+}
+.startbtn svg, .rematchbtn svg, .quitbtn svg{ width:19px; height:19px; flex-shrink:0; }
+.startbtn{
+  margin-top:var(--space-4);
+  background:linear-gradient(120deg, var(--mint), var(--mint-deep)); color:#fff;
+  box-shadow:0 10px 24px -8px rgba(31,199,155,.45);
+}
+.rematchbtn{
+  background:linear-gradient(120deg, var(--violet), var(--violet-deep)); color:#fff;
+  box-shadow:0 10px 24px -8px rgba(108,92,231,.45);
+}
+.quitbtn{
+  background:var(--surface-soft); color:var(--text-lo); border:1.5px solid var(--border);
+}
+
+.pause-panel .startbtn{ margin-top:var(--space-2); }
+
+/* result panel */
+.result-panel{
+  background:var(--surface); border-radius:28px 28px 0 0; padding:var(--space-3) var(--space-4) calc(var(--space-5) + env(safe-area-inset-bottom));
+  width:100%; max-width:var(--shell-max); text-align:center; position:relative;
+  border:1px solid var(--border); border-bottom:none;
+  box-shadow:var(--shadow-pop);
+  animation:sheetUp .32s var(--ease-out);
+}
+.banner{
+  font-family:var(--font-display);
+  font-size:var(--text-2xl); font-weight:700; color:var(--mint-deep);
+  letter-spacing:.2px; margin-bottom:var(--space-4);
+}
+.banner.lose{color:var(--coral-deep);}
+.banner.draw{color:var(--text-lo);}
+.result-avatars{
+  display:flex; align-items:center; justify-content:center; gap:var(--space-4); margin-bottom:var(--space-3);
+}
+.result-avatars .avatar{width:clamp(50px, 9vw, 68px); height:clamp(50px, 9vw, 68px); box-shadow:var(--shadow-card);}
+.result-avatars .avatar svg{width:46%;height:46%;}
+.scoreline{font-family:var(--font-display); font-size:var(--text-2xl); font-weight:700; margin:6px 0; color:var(--text-hi);}
+.trophyline{
+  display:flex; align-items:center; justify-content:center; gap:6px;
+  font-weight:700; color:var(--amber-deep); margin-bottom:var(--space-4); font-size:var(--text-md);
+}
+.trophyline svg{width:15px;height:15px;}
+
+/* Winning-line color used by the canvas drawer via JS (kept here for reference) */

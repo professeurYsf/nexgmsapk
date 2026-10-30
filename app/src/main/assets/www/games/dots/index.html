@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#FFFFFF">
+<title>Dots Strategy</title>
+<link rel="stylesheet" href="../../shared/fonts.css">
+<script src="../../shared/shared.js"></script>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="../../shared/shared.css">
+</head>
+<body>
+<div id="app">
+
+  <header class="topbar">
+    <button class="iconbtn" id="homeBtn" aria-label="Home">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"/></svg>
+    </button>
+    <span class="topbar-title" data-i18n="game.title">Dots Strategy</span>
+    <button class="iconbtn" id="pauseBtn" aria-label="Pause">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>
+    </button>
+  </header>
+
+  <div class="vsbar" id="scoreBar">
+    <div class="pchip p1" id="chipP1">
+      <span class="pn"><svg class="mk" viewBox="0 0 16 16" fill="none" stroke="#2F6BFF" stroke-width="2.6" stroke-linecap="round"><path d="M3 3l10 10M13 3L3 13"/></svg><span id="nameP1">You</span></span>
+      <b id="scoreP1">0</b>
+    </div>
+    <div class="turnchip" id="turnChip"><span id="turnText">Your turn</span><small id="turnSub"></small></div>
+    <div class="pchip p2" id="chipP2">
+      <span class="pn"><svg class="mk" viewBox="0 0 16 16" fill="none" stroke="#FF4A5E" stroke-width="2.6"><circle cx="8" cy="8" r="5"/></svg><span id="nameP2">AI</span></span>
+      <b id="scoreP2">0</b>
+    </div>
+  </div>
+
+  <div class="board-wrap" id="boardWrap">
+    <div class="board-frame"><canvas id="board"></canvas></div>
+  </div>
+  <div class="toast hidden" id="toast"></div>
+
+  <!-- SETUP -->
+  <div class="overlay" id="setupOverlay">
+    <div class="panel">
+      <div class="sheet-handle"></div>
+      <button class="panel-help" id="helpBtn" aria-label="How to play"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.3a2.5 2.5 0 0 1 4.86.86c0 1.6-2.36 2-2.36 3.6"/><circle cx="12" cy="17" r=".6" fill="currentColor"/></svg></button>
+      <div class="panel-logo"><img src="logo.png" alt="Dots Strategy"></div>
+      <h2 data-i18n="game.title">Dots Strategy</h2>
+      <p class="panel-sub" data-i18n="setup.subtitle">Close boxes to claim them and outsmart your opponent</p>
+
+      <div class="section-label" data-i18n="setup.opponent">Opponent</div>
+      <div class="optrow grid2" id="modeRow">
+        <button class="optbtn active" data-mode="ai"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="7" width="16" height="12" rx="3"/><path d="M12 7V4M9 12h.01M15 12h.01M9 16h6"/></svg><span data-i18n="mode.ai">vs AI</span></button>
+        <button class="optbtn" data-mode="pvp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.4"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><circle cx="17.5" cy="9" r="2.8"/><path d="M17 14.2A5.5 5.5 0 0 1 21.8 20"/></svg><span data-i18n="mode.pvp">vs Friend</span></button>
+      </div>
+
+      <div id="levelBox">
+        <div class="section-label" data-i18n="setup.level">AI level</div>
+        <div class="optrow grid2" id="levelRow">
+          <button class="optbtn lv0" data-level="0"><span data-i18n="lvl.0">Easy</span></button>
+          <button class="optbtn lv1" data-level="1"><span data-i18n="lvl.1">Medium</span></button>
+          <button class="optbtn lv2" data-level="2"><span data-i18n="lvl.2">Hard</span></button>
+          <button class="optbtn lv3 active" data-level="3"><span data-i18n="lvl.3">Expert</span></button>
+        </div>
+      </div>
+
+      <div class="section-label" data-i18n="setup.size">Board size</div>
+      <div class="optrow grid3" id="sizeRow">
+        <button class="optbtn" data-size="3"><span>3 × 3</span></button>
+        <button class="optbtn active" data-size="4"><span>4 × 4</span></button>
+        <button class="optbtn" data-size="5"><span>5 × 5</span></button>
+      </div>
+
+      <button class="startbtn" id="startBtn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg><span data-i18n="setup.start">Start</span></button>
+      <button class="quitbtn" id="setupQuitBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4H6.5A1.5 1.5 0 0 0 5 5.5v13A1.5 1.5 0 0 0 6.5 20H9"/><path d="M16 8l4 4-4 4M20 12H9"/></svg><span data-i18n="setup.quit">Quit</span></button>
+    </div>
+  </div>
+
+  <!-- PAUSE -->
+  <div class="overlay hidden" id="pauseOverlay">
+    <div class="panel pause-panel">
+      <div class="sheet-handle"></div>
+      <h2 data-i18n="pause.title">Game Paused</h2>
+      <button class="startbtn" id="resumeBtn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg><span data-i18n="pause.resume">Resume</span></button>
+      <button class="rematchbtn" id="pauseRestartBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg><span data-i18n="pause.restart">Restart</span></button>
+      <button class="quitbtn" id="pauseMenuBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"/></svg><span data-i18n="pause.menu">Menu</span></button>
+    </div>
+  </div>
+
+  <!-- HELP -->
+  <div class="overlay hidden" id="helpOverlay">
+    <div class="panel">
+      <div class="sheet-handle"></div>
+      <h2 data-i18n="help.title">How To Play</h2>
+      <ul class="help-list">
+        <li data-i18n="help.line1"></li><li data-i18n="help.line2"></li><li data-i18n="help.line3"></li><li data-i18n="help.line4"></li>
+      </ul>
+      <button class="startbtn" id="helpCloseBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg><span data-i18n="help.close">Got it</span></button>
+    </div>
+  </div>
+
+  <!-- RESULT -->
+  <div class="overlay hidden" id="resultOverlay">
+    <div class="result-panel">
+      <div class="sheet-handle"></div>
+      <div class="banner" id="resBanner">YOU WIN!</div>
+      <div class="vs-result">
+        <div class="vs-card blue" id="resCard1"><span id="resName1">You</span><b id="resScore1">0</b></div>
+        <div class="vs-card red" id="resCard2"><span id="resName2">AI</span><b id="resScore2">0</b></div>
+      </div>
+      <button class="rematchbtn" id="resAgainBtn" style="margin-top:0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg><span data-i18n="result.again">Play again</span></button>
+      <button class="quitbtn" id="resMenuBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span data-i18n="result.menu">Menu</span></button>
+    </div>
+  </div>
+
+</div>
+<script src="ai.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

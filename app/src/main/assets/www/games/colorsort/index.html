@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#EAF6FF">
+<title>Tubes de Couleurs</title>
+<link rel="stylesheet" href="../../shared/fonts.css">
+<script src="../../shared/shared.js"></script>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="../../shared/shared.css">
+</head>
+<body>
+<div id="app">
+
+  <header class="topbar">
+    <button class="iconbtn" id="btnBack" aria-label="Retour">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5 8 12l7 7"/></svg>
+    </button>
+    <span class="topbar-title" id="topTitle">Niveau 1</span>
+    <button class="iconbtn" id="btnLevels" aria-label="Niveaux">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="7" height="7" rx="1.8"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.8"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.8"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.8"/></svg>
+    </button>
+  </header>
+
+  <div class="statsbar">
+    <div class="stat-chip">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 8v8l8 6 8-6V8l-8-6Z"/></svg>
+      <span id="movesDisplay">0</span>
+    </div>
+    <div class="stat-chip">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>
+      <span id="timerDisplay">00:00</span>
+    </div>
+
+    <button class="chipbtn" id="btnUndo" aria-label="Annuler">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg>
+    </button>
+    <button class="chipbtn hintbtn" id="btnHint" aria-label="Indice">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3Z"/></svg><span data-i18n="hint.label">Hint</span><i class="hint-badge" id="hintBadge">2</i>
+    </button>
+    <button class="chipbtn" id="btnRestart" aria-label="Recommencer">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+    </button>
+  </div>
+
+  <div class="board-wrap">
+    <div class="board-frame" id="boardFrame">
+      <canvas id="cv"></canvas>
+    </div>
+  </div>
+
+  <div class="toast hidden" id="toast"></div>
+
+  <!-- SETUP -->
+  <div class="overlay" id="setupOverlay">
+    <div class="panel">
+      <div class="sheet-handle"></div>
+      <button class="panel-help" id="btnHelp" aria-label="Comment jouer">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.3a2.5 2.5 0 0 1 4.86.86c0 1.6-2.16 2-2.36 3.3" stroke-linecap="round"/><circle cx="12" cy="17" r="1.1" fill="currentColor" stroke="none"/></svg>
+      </button>
+      <div class="panel-logo"><img src="logo.png" alt="Tubes de Couleurs"></div>
+      <h2 data-i18n="game.title">Tubes de Couleurs</h2>
+      <p class="panel-sub" data-i18n="game.subtitle">Trie les couleurs : un tube = une couleur</p>
+      <button class="startbtn" id="btnStart">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        <span data-i18n="game.start">Commencer</span>
+      </button>
+      <button class="quitbtn" id="btnExitSetup">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 4H6.5A1.5 1.5 0 0 0 5 5.5v13A1.5 1.5 0 0 0 6.5 20H9"/><path d="M13 8l4 4-4 4M17 12H9" stroke-linejoin="round"/></svg>
+        <span data-i18n="game.quit">Quitter</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- LEVELS -->
+  <div class="overlay hidden" id="levelsOverlay">
+    <div class="panel">
+      <div class="sheet-handle"></div>
+      <h2 data-i18n="levels">Niveaux</h2>
+      <div class="lvl-grid" id="lvlGrid"></div>
+      <button class="quitbtn" id="btnLevelsClose">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+        <span data-i18n="help.close">Compris</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- HELP -->
+  <div class="overlay hidden" id="helpOverlay">
+    <div class="panel">
+      <div class="sheet-handle"></div>
+      <h2 data-i18n="help.title">Comment jouer</h2>
+      <ul class="help-list">
+        <li data-i18n="help.li1"></li><li data-i18n="help.li2"></li><li data-i18n="help.li3"></li><li data-i18n="help.li4"></li>
+      </ul>
+      <button class="startbtn" id="btnHelpClose">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>
+        <span data-i18n="help.close">Compris</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- RESULT -->
+  <div class="overlay hidden" id="resultOverlay">
+    <div class="result-panel">
+      <div class="sheet-handle"></div>
+      <div class="banner" data-i18n="result.banner">🎉 Niveau terminé !</div>
+      <p id="newRecord" class="new-record hidden" data-i18n="result.record">Nouveau record !</p>
+      <div class="win-stats">
+        <div class="win-stat"><span data-i18n="result.moves">Coups</span><strong id="winMoves">0</strong></div>
+        <div class="win-stat"><span data-i18n="result.time">Temps</span><strong id="winTime">00:00</strong></div>
+        <div class="win-stat"><span data-i18n="result.best">Record</span><strong id="winBest">—</strong></div>
+      </div>
+      <button class="rematchbtn" id="btnNext">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        <span data-i18n="result.next">Niveau suivant</span>
+      </button>
+      <button class="quitbtn" id="btnPlayAgain">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+        <span data-i18n="result.again">Rejouer</span>
+      </button>
+      <button class="quitbtn" id="btnResultMenu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="7" height="7" rx="1.8"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.8"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.8"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.8"/></svg>
+        <span data-i18n="result.menu">Niveaux</span>
+      </button>
+    </div>
+  </div>
+
+  <div id="confetti-container"></div>
+</div>
+<script src="script.js"></script>
+</body>
+</html>
